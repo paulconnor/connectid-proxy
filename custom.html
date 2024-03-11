@@ -1,0 +1,556 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Relying Party Sample App</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
+
+      :root {
+        --font: 'DM Sans', sans-serif;
+        --charcoal: #262626;
+        --mint: #beedd2;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #1b1a1a;
+      }
+
+      .main {
+        font-family: var(--font);
+        color: white;
+        padding: 50px 100px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .header {
+        font-family: var(--font);
+        padding: 30px;
+        background: #262626e6;
+        box-shadow: 0 0 0 1px #ffffff0d;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .logo {
+        width: 120px;
+      }
+
+      .tech {
+        color: var(--mint);
+        font-size: 18px;
+      }
+
+      .title1 {
+        font-size: 36px;
+        color: var(--mint);
+      }
+
+      .title2 {
+        font-size: 20px;
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+      }
+
+      .title2 > svg {
+        width: 18px;
+        height: 18px;
+        fill: var(--mint);
+        margin-left: 8px;
+        flex-shrink: 0;
+      }
+
+      .title3 {
+        font-size: 16px;
+      }
+
+      .title3--mtop {
+        margin-top: 20px;
+      }
+
+      .title3--grid {
+        display: grid;
+        grid-template-columns: 280px 90px;
+        grid-gap: 20px;
+      }
+
+      .title3--grid span:last-child {
+        text-align: center;
+      }
+
+      .title4 {
+        font-size: 14px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+        margin-top: 30px;
+      }
+
+      .claim-grid {
+        display: grid;
+        grid-template-columns: 280px 90px;
+        grid-gap: 20px;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+      }
+
+      .align-baseline {
+        align-items: baseline;
+      }
+
+      label > input {
+        margin-right: 6px;
+      }
+
+      .essential {
+        font-size: 14px;
+        margin-top: 0;
+      }
+
+      .essential > input {
+        margin-right: 6px;
+      }
+
+      .info {
+        margin-left: 6px;
+        color: darkgrey;
+      }
+
+      .cid-button button {
+        font-size: 18px;
+        padding: 12px 20px;
+      }
+
+      .button-container {
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+      }
+
+      .button-container *:first-child {
+        margin-right: 20px;
+      }
+
+      .error {
+        margin-top: 20px;
+      }
+
+      .button {
+        border: 1px solid white;
+        border-radius: 5px;
+        color: white;
+        text-align: center;
+        display: block;
+        width: fit-content;
+        margin-top: 30px;
+        padding: 12px 20px;
+        text-decoration: none;
+      }
+
+      .button--small {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      .default-claims {
+        margin-top: 10px;
+        color: darkgrey;
+        font-family: monospace;
+        font-size: 16px;
+        margin-left: 20px;
+      }
+
+      .default-claims li {
+        margin-top: 10px;
+      }
+
+      .claim {
+        font-size: 16px;
+      }
+
+      .claim:first-of-type {
+        margin-top: 30px;
+      }
+
+      .claim:not(:first-of-type) {
+        margin-top: 14px;
+      }
+
+      .claim__name {
+        font-family: monospace;
+        color: darkgrey;
+      }
+
+      .claim__value {
+        margin-left: 8px;
+        word-break: break-all;
+      }
+
+      .claim .subclaim {
+        font-size: 14px;
+        margin-left: 20px;
+        margin-top: 6px;
+      }
+
+      .cert-status {
+        color: darkgrey;
+        font-family: monospace;
+        margin-left: 4px;
+        font-weight: normal;
+      }
+
+      .idtoken {
+        margin-top: 30px;
+      }
+
+      .idtoken__title {
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+      }
+
+      .idtoken__response {
+        margin-top: 10px;
+        font-family: monospace;
+        color: darkgrey;
+        padding: 20px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        font-size: 16px;
+        line-height: 24px;
+        overflow: scroll;
+        word-break: break-all;
+      }
+
+      .idtoken__response--white-space {
+        white-space: pre;
+        padding: 0 20px;
+        word-break: unset;
+      }
+
+      .idtoken__copy {
+        cursor: pointer;
+        padding: 6px 10px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        color: darkgrey;
+        font-size: 14px;
+        margin-left: 12px;
+        display: flex;
+        align-items: center;
+        min-height: 34px; /* prevent layout jump when text is changed to `copied` */
+        box-sizing: border-box;
+      }
+
+      .idtoken__copy > svg {
+        margin-left: 4px;
+        width: 20px;
+        height: 20px;
+        fill: white;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 30px;
+        height: 17px;
+        justify-self: center;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #4d4b4b;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 17px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: '';
+        height: 13px;
+        width: 13px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #2196f3;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196f3;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(13px);
+        -ms-transform: translateX(13px);
+        transform: translateX(13px);
+      }
+
+      .loading {
+        display: none;
+      }
+
+      @media (max-width: 992px) {
+        .main {
+          padding: 30px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img class="logo" src="https://cdn.dev.connectid.com.au/portal/cid-logo.png" alt="Connect ID logo" />
+      <span class="tech">Node.JS</span>
+    </div>
+    <div class="main">
+      <h1 class="title1">Relying Party Sample App</h1>
+      <h2 class="title2">Select the claims to request as a Relying Party</h2>
+      <div class="grid">
+        <div>
+          <h3 class="title3 title3--grid"><span>Standard Claims</span><span class="title4">Essential</span></h3>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="name" checked> name </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="name-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="given_name" checked> given_name </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="given_name-essential" checked> 
+              <span class="slider"></span>
+            </label>
+            
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="middle_name" checked> middle_name </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="middle_name-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="family_name" checked> family_name </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="family_name-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="email" checked> email </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="email-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="birthdate" checked> birthdate </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="birthdate-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="phone_number" checked> phone_number </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="phone_number-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="sclaims" value="address" checked> address </div>
+            <label class="switch essential">
+              <input type="checkbox" name="seclaims" value="address-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+        </div>
+        <div>
+          <h3 class="title3 title3--grid"><span>Extended Claims</span><span class="title4">Essential</span></h3>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="xclaims" value="over18"> over18 </div>
+            <label class="switch essential">
+              <input type="checkbox" name="xeclaims" value="over18-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="xclaims" value="over21"> over21 </div>
+            <label class="switch essential">
+              <input type="checkbox" name="xeclaims" value="over21-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="xclaims" value="over25"> over25 </div>
+            <label class="switch essential">
+              <input type="checkbox" name="xeclaims" value="over25-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="xclaims" value="over65"> over65 </div>
+            <label class="switch essential">
+              <input type="checkbox" name="xeclaims" value="over65-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="xclaims" value="beneficiary_account_au"> beneficiary_account_au </div>
+            <label class="switch essential">
+              <input type="checkbox" name="xeclaims" value="beneficiary_account_au-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="xclaims" value="beneficiary_account_au_payid"> beneficiary_account_au_payid </div>
+            <label class="switch essential">
+              <input type="checkbox" name="xeclaims" value="beneficiary_account_au_payid-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label class="claim-grid">
+            <div><input type="checkbox" name="xclaims" value="beneficiary_account_international"> beneficiary_account_international </div>
+            <label class="switch essential">
+              <input type="checkbox" name="xeclaims" value="beneficiary_account_international-essential" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+        </div>
+        <div>
+          <h3 class="title3">Technical Claims</h3>
+          <label><input type="checkbox" name="tclaims" value="txn" checked onclick="return false;"> txn <span class="info">(mandatory)</span></label>
+        </div>
+        <div>
+          <h3 class="title3">Certification</h3>
+          <label class="align-baseline"><input type="checkbox" name="onlycertified" value="Active" checked> Only show active authorisation servers supporting this device and claims list</label>
+        </div>
+      </div>
+      <a class="button button--small" href="/">Predefined claims</a>
+      <div class="button-container">
+        <div id="cid-idp-selector" class="cid-button"></div>
+        <div class="loading">Redirecting to IDP website...</div>
+      </div>
+      <script src="https://cdn.connectid.com.au/idp-selector/8-latest/cid-idp-selector.js"></script>
+      <script>
+        // *** You don't need to do this to integrate with ConnectID - see index.html for the code you need to add to your app ***
+
+        const bindChange = () => {
+          document.querySelectorAll('[name="sclaims"]').forEach((checkbox) => {
+            checkbox.addEventListener('change', () => resetIdpSelector())
+          })
+          
+          document.querySelectorAll('[name="xclaims"]').forEach((checkbox) => {
+            checkbox.addEventListener('change', () => resetIdpSelector())
+          })
+
+          document.querySelector('[name="onlycertified"]').addEventListener('change', () => resetIdpSelector())
+        }
+
+        const initIdpSelector = (claims, onlyCertified) => {
+          const certificationStatus = onlyCertified ? 'Active' : 'All'
+          const showAllParticipants = onlyCertified ? false : true
+
+          const options = {
+            onProceed: async function (authorisationServerId) {
+              const loading = document.querySelector('.loading')
+              loading.style.display = 'inline-block'
+
+              const requestClaims = getRequestClaims()
+              const essentialClaims = requestClaims.filter(claim => claim === 'txn' || document.querySelector(`[value="${claim}-essential"]`)?.checked)
+              const voluntaryClaims = requestClaims.filter(claim => !essentialClaims.includes(claim))
+
+
+              const response = await fetch('/select-bank', {
+                method: 'POST',
+                body: JSON.stringify({ authorisationServerId, essentialClaims, voluntaryClaims }),
+                headers: {
+                  'Content-Type': 'application/json',
+                }
+              })
+              if (!response.ok) {
+                const { error } = await response.json()
+                alert(JSON.stringify(error))
+                loading.style.display = 'none'
+                return
+              }
+
+              const { authUrl } = await response.json()
+              
+              window.location.href = authUrl
+            },
+            buttonLabel: 'Verify',
+            rpLogoUrl: '/logo.png',
+            certificationStatus,
+            claims,
+            participantsUri: 'https://data.directory.sandbox.connectid.com.au/participants',
+            enableManualVerification: true,
+            showAllParticipants,
+          }
+          window.cidInitIdpSelector(options)
+        }
+
+        const resetIdpSelector = () => {
+          document.querySelector('#cid-idp-selector').innerHTML = ''
+          document.querySelector('#cid-idp-selector-overlay')?.remove()
+          document.querySelector('#cid-idp-selector-popup')?.remove()
+          document.querySelector('head style')?.remove() // remove style added by IDP Selector
+
+          const claims = [
+            ...Array.from(document.querySelectorAll('[name="sclaims"]')).filter(claim => claim.checked).map(claim => claim.value),
+            ...Array.from(document.querySelectorAll('[name="xclaims"]')).filter(claim => claim.checked).map(claim => claim.value),
+          ]
+          const onlyCertified = document.querySelector('input[name="onlycertified"]').checked
+
+          initIdpSelector(claims, onlyCertified)
+        }
+
+        const getRequestClaims = () => [
+            'txn',
+            ...Array.from(document.querySelectorAll('[name="sclaims"]')).filter(claim => claim.checked).map(claim => claim.value),
+            ...Array.from(document.querySelectorAll('[name="xclaims"]')).filter(claim => claim.checked).map(claim => claim.value),
+          ]
+
+        initIdpSelector(['name', 'given_name', 'middle_name', 'family_name', 'phone_number', 'email', 'address', 'birthdate'], 'Active')
+        bindChange()
+      </script>
+    </div>    
+  </body>
+</html>

@@ -1,0 +1,443 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Relying Party Sample App | Node.JS</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
+
+      :root {
+        --font: 'DM Sans', sans-serif;
+        --charcoal: #262626;
+        --mint: #beedd2;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #1b1a1a;
+      }
+
+      .main {
+        font-family: var(--font);
+        color: white;
+        padding: 50px 100px;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .header {
+        font-family: var(--font);
+        padding: 30px;
+        background: #262626e6;
+        box-shadow: 0 0 0 1px #ffffff0d;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .logo {
+        width: 120px;
+      }
+
+      .tech {
+        color: var(--mint);
+        font-size: 18px;
+      }
+
+      .title1 {
+        font-size: 36px;
+        color: var(--mint);
+      }
+
+      .title2 {
+        font-size: 20px;
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+      }
+
+      .title2 > svg {
+        width: 18px;
+        height: 18px;
+        fill: var(--mint);
+        margin-left: 8px;
+        flex-shrink: 0;
+      }
+
+      .title3 {
+        font-size: 16px;
+      }
+
+      .title3--mtop {
+        margin-top: 20px;
+      }
+
+      .title3--grid {
+        display: grid;
+        grid-template-columns: 180px 90px;
+        grid-gap: 20px;
+      }
+
+      .title3--grid span:last-child {
+        text-align: center;
+      }
+
+      .title4 {
+        font-size: 14px;
+      }
+
+      .button-container {
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+      }
+
+      .button-container *:first-child {
+        margin-right: 20px;
+      }
+
+      .button {
+        border: 1px solid white;
+        border-radius: 5px;
+        color: white;
+        text-align: center;
+        display: block;
+        width: fit-content;
+        margin-top: 30px;
+        padding: 12px 20px;
+        text-decoration: none;
+      }
+
+      .button--small {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      .claim {
+        font-size: 16px;
+      }
+
+      .claim:first-of-type {
+        margin-top: 30px;
+      }
+
+      .claim:not(:first-of-type) {
+        margin-top: 14px;
+      }
+
+      .claim__name {
+        font-family: monospace;
+        color: darkgrey;
+      }
+
+      .claim__info {
+        color: dimgrey;
+        font-family: var(--font);
+      }
+
+      .claim__value {
+        margin-left: 8px;
+        word-break: break-all;
+      }
+
+      .claim .subclaim {
+        font-size: 14px;
+        margin-left: 20px;
+        margin-top: 6px;
+      }
+
+      .idtoken {
+        margin-top: 30px;
+      }
+
+      .idtoken__title {
+        font-size: 18px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+      }
+
+      .idtoken__response {
+        margin-top: 10px;
+        font-family: monospace;
+        color: darkgrey;
+        padding: 20px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        font-size: 16px;
+        line-height: 24px;
+        overflow: scroll;
+        word-break: break-all;
+      }
+
+      .idtoken__response--white-space {
+        white-space: pre;
+        padding: 0 20px;
+        word-break: unset;
+      }
+
+      .idtoken__copy {
+        cursor: pointer;
+        padding: 6px 10px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        color: darkgrey;
+        font-size: 14px;
+        margin-left: 12px;
+        display: flex;
+        align-items: center;
+        min-height: 34px; /* prevent layout jump when text is changed to `copied` */
+        box-sizing: border-box;
+      }
+
+      .idtoken__copy > svg {
+        margin-left: 4px;
+        width: 20px;
+        height: 20px;
+        fill: white;
+      }
+      
+      .result {
+        display: none;
+      }
+
+      .feedback {
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img class="logo" src="https://cdn.dev.connectid.com.au/portal/cid-logo.png" alt="Connect ID logo" />
+      <span class="tech">Node.JS</span>
+    </div>
+    <div class="main">
+      <h1 class="title1">Relying Party Sample App</h1>
+      <div class="feedback">
+        Loading...
+      </div>
+      <div class="result">
+        <h2 class="title2">Digital ID successfully connected <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="var(--mint)"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.959 17l-4.5-4.319 1.395-1.435 3.08 2.937 7.021-7.183 1.422 1.409-8.418 8.591z"/></svg></h2>
+        <div class="claim">
+          <span class="claim__name">txn</span><span id="txn" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">name</span><span id="name" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">given_name</span><span id="given_name" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">middle_name</span><span id="middle_name" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">family_name</span><span id="family_name" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">email</span><span id="email" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">phone_number</span><span id="phone_number" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">birthdate</span><span id="birthdate" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">address</span>
+          <div class="subclaim">
+            <span class="claim__name">street_address</span><span id="street_address" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">locality</span><span id="locality" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">region</span><span id="region" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">country</span><span id="country" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">postal_code</span><span id="postal_code" class="claim__value"></span>
+          </div>
+        </div>
+        <div class="claim">
+          <span class="claim__name">over18</span><span id="over18" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">over21</span><span id="over21" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">over25</span><span id="over25" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">over65</span><span id="over65" class="claim__value"></span>
+        </div>
+        <div class="claim">
+          <span class="claim__name">beneficiary_account_au</span>
+          <div class="subclaim">
+            <span class="claim__name">beneficiary_name</span><span id="beneficiary_account_au-beneficiary_name" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">account_bsb</span><span id="account_bsb" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">account_number</span><span id="account_number" class="claim__value"></span>
+          </div>
+        </div>
+        <div class="claim">
+          <span class="claim__name">beneficiary_account_au_payid</span>
+          <div class="subclaim">
+            <span class="claim__name">beneficiary_name</span><span id="beneficiary_account_au_payid-beneficiary_name" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">payid</span><span id="payid" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">payid_type</span><span id="payid_type" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">account_bsb <span class="claim__info">fallback</span></span><span id="beneficiary_account_au_payid-account_bsb" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">account_number <span class="claim__info">fallback</span></span><span id="beneficiary_account_au_payid-account_number" class="claim__value"></span>
+          </div>
+        </div>
+        <div class="claim">
+          <span class="claim__name">beneficiary_account_international</span>
+          <div class="subclaim">
+            <span class="claim__name">beneficiary_name</span><span id="beneficiary_account_international-beneficiary_name" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">bic_swift_code</span><span id="bic_swift_code" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">account_number_international</span><span id="account_number_international" class="claim__value"></span>
+          </div>
+          <div class="subclaim">
+            <span class="claim__name">beneficiary_residential_address</span><span id="beneficiary_residential_address" class="claim__value"></span>
+          </div>
+        </div>
+        <div class="idtoken">
+          <span class="idtoken__title">
+            ID Token (raw)
+            <span id="idtoken-raw-copy" class="idtoken__copy" onclick="onCopyButtonClick('#idtoken-raw-copy', '#idtoken-raw-copy-icon', '#idtoken-raw-copy-text', '#idtoken-raw-response')">
+              <span id="idtoken-raw-copy-text">copy</span>
+              <svg id="idtoken-raw-copy-icon" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m6 18h-3c-.48 0-1-.379-1-1v-14c0-.481.38-1 1-1h14c.621 0 1 .522 1 1v3h3c.621 0 1 .522 1 1v14c0 .621-.522 1-1 1h-14c-.48 0-1-.379-1-1zm1.5-10.5v13h13v-13zm9-1.5v-2.5h-13v13h2.5v-9.5c0-.481.38-1 1-1z" fill-rule="nonzero"/></svg>
+            </span>
+          </span>
+          <div id="idtoken-raw-response" class="idtoken__response"></div>
+        </div>
+        <div class="idtoken">
+          <span class="idtoken__title">
+            ID Token (decoded)
+            <span id="idtoken-decoded-copy" class="idtoken__copy" onclick="onCopyButtonClick('#idtoken-decoded-copy', '#idtoken-decoded-copy-icon', '#idtoken-decoded-copy-text', '#idtoken-decoded-response')">
+              <span id="idtoken-decoded-copy-text">copy</span>
+              <svg id="idtoken-decoded-copy-icon" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m6 18h-3c-.48 0-1-.379-1-1v-14c0-.481.38-1 1-1h14c.621 0 1 .522 1 1v3h3c.621 0 1 .522 1 1v14c0 .621-.522 1-1 1h-14c-.48 0-1-.379-1-1zm1.5-10.5v13h13v-13zm9-1.5v-2.5h-13v13h2.5v-9.5c0-.481.38-1 1-1z" fill-rule="nonzero"/></svg>
+            </span>
+          </span>
+          <div id="idtoken-decoded-response" class="idtoken__response idtoken__response--white-space"></div>
+        </div>
+      </div>
+      <div class="button-container">
+        <a class="button" href="/">New request</a>
+        <a class="button" href="/custom">New request with custom claims</a>
+      </div>
+    </div>
+    <script>
+      const onCopyButtonClick = (copyButtonSelector, copyIconSelector, copyTextSelector, idTokenSelector) => {
+        const idTokenResponse = document.querySelector(idTokenSelector).textContent.trim()
+        navigator.clipboard.writeText(idTokenResponse)
+        
+        const copyIcon = document.querySelector(copyIconSelector)
+        const copyText = document.querySelector(copyTextSelector)
+    
+        copyIcon.style.display = 'none'
+        copyText.textContent = 'copied!'
+        
+        setTimeout(() => {
+          copyIcon.style.display = 'inline-block'
+          copyText.textContent = 'copy'
+        }, 2000)
+      }
+
+      const getError = () => {
+        const errorCode = new URLSearchParams(window.location.search).get('error')
+        const errorDescription = new URLSearchParams(window.location.search).get('error_description')
+        return { errorCode, errorDescription }
+      }
+
+      const retrieveTokens = async () => {
+        const response = await fetch(`/retrieve-tokens${window.location.search}`)
+        if (!response.ok) {
+          const { error } = await response.json()
+          document.querySelector('.feedback').textContent = `${error.indexOf('Error') === -1 ? 'Error: ' : ''}${error}`
+          return
+        }
+
+        const { claims, token } = await response.json()
+
+        document.querySelector('#txn').textContent = claims['txn'] || 'Not shared'
+        document.querySelector('#txn').textContent = claims['txn'] || 'Not shared' 
+        document.querySelector('#name').textContent = claims['name'] || 'Not shared' 
+        document.querySelector('#given_name').textContent = claims['given_name'] || 'Not shared' 
+        document.querySelector('#middle_name').textContent = claims['middle_name'] || 'Not shared' 
+        document.querySelector('#family_name').textContent = claims['family_name'] || 'Not shared' 
+        document.querySelector('#email').textContent = claims['email'] || 'Not shared' 
+        document.querySelector('#phone_number').textContent = claims['phone_number'] || 'Not shared' 
+        document.querySelector('#birthdate').textContent = claims['birthdate'] || 'Not shared' 
+
+        const address = claims?.address
+        document.querySelector('#street_address').textContent = address?.street_address || 'Not shared' 
+        document.querySelector('#locality').textContent = address?.locality || 'Not shared' 
+        document.querySelector('#region').textContent = address?.region || 'Not shared' 
+        document.querySelector('#country').textContent = address?.country || 'Not shared' 
+        document.querySelector('#postal_code').textContent = address?.postal_code || 'Not shared' 
+        
+        const verifiedClaims = claims?.verified_claims?.claims
+        document.querySelector('#over18').textContent = verifiedClaims?.over18 ?? 'Not shared' 
+        document.querySelector('#over21').textContent = verifiedClaims?.over21 ?? 'Not shared' 
+        document.querySelector('#over25').textContent = verifiedClaims?.over25 ?? 'Not shared' 
+        document.querySelector('#over65').textContent = verifiedClaims?.over65 ?? 'Not shared' 
+          
+        const beneficiaryAccount = claims?.verified_claims?.claims?.beneficiary_account_au
+        document.querySelector('#beneficiary_account_au-beneficiary_name').textContent = beneficiaryAccount?.beneficiary_name || 'Not shared' 
+        document.querySelector('#account_bsb').textContent = beneficiaryAccount?.account_bsb || 'Not shared' 
+        document.querySelector('#account_number').textContent = beneficiaryAccount?.account_number || 'Not shared' 
+
+        const payId = claims?.verified_claims?.claims?.beneficiary_account_au_payid
+        document.querySelector('#beneficiary_account_au_payid-beneficiary_name').textContent = payId?.beneficiary_name || 'Not shared' 
+        document.querySelector('#payid').textContent = payId?.payid || 'Not shared' 
+        document.querySelector('#payid_type').textContent = payId?.payid_type || 'Not shared' 
+        // payid fallback
+        document.querySelector('#beneficiary_account_au_payid-account_bsb').textContent = payId?.account_bsb || 'Not shared' 
+        document.querySelector('#beneficiary_account_au_payid-account_number').textContent = payId?.account_number || 'Not shared' 
+
+        const internationalAccount = claims?.verified_claims?.claims?.beneficiary_account_international
+        document.querySelector('#beneficiary_account_international-beneficiary_name').textContent = internationalAccount?.beneficiary_name || 'Not shared' 
+        document.querySelector('#bic_swift_code').textContent = internationalAccount?.bic_swift_code || 'Not shared' 
+        document.querySelector('#account_number_international').textContent = internationalAccount?.account_number_international || 'Not shared' 
+        document.querySelector('#beneficiary_residential_address').textContent = internationalAccount?.beneficiary_residential_address || 'Not shared' 
+                
+        document.querySelector('#idtoken-decoded-response').textContent = token.decoded
+        document.querySelector('#idtoken-raw-response').textContent = token.raw
+
+        document.querySelector('.feedback').style.display = 'none'
+        document.querySelector('.result').style.display = 'block'
+      }
+
+      const init = () => {
+        const { errorCode, errorDescription } = getError()
+        if (errorCode) {
+          document.querySelector('.feedback').textContent = `${errorCode}: ${decodeURIComponent(errorDescription)}`
+          return
+        } 
+        retrieveTokens()
+      }
+
+      init()
+    </script>
+  </body>
+</html>
